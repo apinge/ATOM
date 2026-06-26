@@ -4,7 +4,8 @@
 import argparse
 import logging
 import json
-from dataclasses import dataclass, fields
+import os
+from dataclasses import dataclass, field, fields
 from typing import List, Optional
 
 from atom import LLMEngine
@@ -47,7 +48,9 @@ class EngineArgs:
     level: int = 3
     load_dummy: bool = False
     enable_expert_parallel: bool = False
-    torch_profiler_dir: Optional[str] = None
+    torch_profiler_dir: Optional[str] = field(
+        default_factory=lambda: os.getenv("ATOM_TORCH_PROFILER_DIR", None)
+    )
     enable_dp_attention: bool = False
     enable_tbo: Optional[str] = None
     all2all_backend: Optional[str] = None
@@ -139,8 +142,8 @@ class EngineArgs:
         parser.add_argument(
             "--torch-profiler-dir",
             type=str,
-            default=None,
-            help="Directory to save torch profiler traces",
+            default=os.getenv("ATOM_TORCH_PROFILER_DIR", None),
+            help="Directory to save torch profiler traces (or set ATOM_TORCH_PROFILER_DIR)",
         )
         parser.add_argument(
             "--enable-dp-attention",
